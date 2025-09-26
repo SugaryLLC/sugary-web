@@ -2,9 +2,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { createGuest } from "./actions";
 import { PrimaryButton } from "@/components/buttons/PrimaryButton";
 import GuestUserProfile from "./GuestUserProfile";
+import { createGuest } from "@/actions/auth/CreateGuest";
 
 export default function GuestPage() {
   const [pending, start] = useTransition();

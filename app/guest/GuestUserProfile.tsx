@@ -2,51 +2,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getUser } from "./actions";
-import Image from "next/image";
-
-interface GiftingPlace {
-  RequestLatitude: number;
-  RequestLongitude: number;
-  CountryIso2: string;
-  CountryName: string;
-  StateName: string;
-  CityName: string;
-  AdminZoneName: string;
-  Level: string;
-}
-
-interface Currency {
-  Id: string;
-  Symbol: string;
-  ConversionRate: number;
-  RoundOff: boolean;
-}
-
-interface User {
-  Username: string;
-  Avatar: string;
-  FullName: string;
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  PhoneNumber: string;
-  IsGuest: boolean;
-  IsCustomer: boolean;
-  SuperAdmin: boolean;
-  Id: string;
-  ProfileCompletePercent: number;
-  CountryIso2: string;
-  GiftingPlace: GiftingPlace;
-  Currency: Currency;
-  OccasionCount: number;
-  PhoneNumberConfirmed: boolean;
-  EmailConfirmed: boolean;
-  OnBoardCompleted: boolean;
-}
 
 export default function GuestUserProfile() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -56,13 +14,24 @@ export default function GuestUserProfile() {
       setLoading(true);
       setError(null);
 
-      const result = await getUser();
-      if (result?.success && result?.user) {
-        setUser(result.user);
-      } else {
-        setError(result?.message || "Failed to load user data");
+      try {
+        const res = await fetch("/api/current-user", {
+          method: "GET",
+          credentials: "include", // important so cookies (access_token) are sent
+        });
+
+        const result = await res.json();
+
+        if (result?.success && result?.user) {
+          setUser(result.user);
+        } else {
+          setError(result?.message || "Failed to load user data");
+        }
+      } catch (err: any) {
+        setError(err?.message || "Network error");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
   };
 
@@ -130,54 +99,10 @@ export default function GuestUserProfile() {
                 Email
               </label>
               <p className="text-gray-900">{user?.Email}</p>
-              {user?.EmailConfirmed && (
-                <span className="text-green-600 text-sm">✓ Confirmed</span>
-              )}
-            </div>
-          )}
-
-          {user?.PhoneNumber && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Phone
-              </label>
-              <p className="text-gray-900">{user?.PhoneNumber}</p>
-              {user?.PhoneNumberConfirmed && (
-                <span className="text-green-600 text-sm">✓ Confirmed</span>
-              )}
             </div>
           )}
         </div>
       </div>
-
-      {user?.GiftingPlace && (
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">Location</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium">Country:</span>{" "}
-              {user?.GiftingPlace.CountryName}
-            </div>
-            <div>
-              <span className="font-medium">State:</span>{" "}
-              {user?.GiftingPlace.StateName}
-            </div>
-            <div>
-              <span className="font-medium">City:</span>{" "}
-              {user?.GiftingPlace.CityName}
-            </div>
-            <div>
-              <span className="font-medium">Area:</span>{" "}
-              {user?.GiftingPlace.AdminZoneName}
-            </div>
-          </div>
-          <div className="mt-2 text-xs text-gray-500">
-            Level: {user?.GiftingPlace.Level} • Coordinates:{" "}
-            {user?.GiftingPlace.RequestLatitude},{" "}
-            {user?.GiftingPlace.RequestLongitude}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
