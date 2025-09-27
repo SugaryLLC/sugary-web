@@ -1,3 +1,5 @@
+import { PrimaryButton } from "@/components/buttons/PrimaryButton";
+
 export default function Home() {
   return (
     <div className="m-5 flex-col gap-4 flex items-center justify-center">
@@ -43,6 +45,9 @@ export default function Home() {
 
       <GuestLogin /> */}
       Home
+      <PrimaryButton className="flex items-center gap-2">
+        Open Modal
+      </PrimaryButton>
     </div>
   );
 }

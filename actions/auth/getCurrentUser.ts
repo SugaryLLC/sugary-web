@@ -1,4 +1,5 @@
 "use server";
+import { api } from "@/lib/api";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { cookies } from "next/headers";
@@ -15,7 +16,7 @@ export async function getCurrentUser() {
       return { success: false, message: "No access token found" };
     }
 
-    const res = await fetch(`${API}/Account/GetUser`, {
+    const res = await api("/Account/GetUser", {
       method: "GET",
       headers: {
         accept: "application/json",
@@ -24,12 +25,12 @@ export async function getCurrentUser() {
       cache: "no-store",
     });
 
-    const raw = await res.text();
     let data: any = null;
     try {
-      data = raw ? JSON.parse(raw) : null;
-    } catch {}
-
+      data = await res.json();
+    } catch {
+      data = null;
+    }
     if (res.ok && data) {
       return { success: true, user: data };
     }
@@ -37,7 +38,7 @@ export async function getCurrentUser() {
     return {
       success: false,
       status: res.status,
-      message: data?.Message || raw || "Failed to get user data",
+      message: data?.Message || "Failed to get user data",
     };
   } catch (err: any) {
     return {

@@ -11,6 +11,7 @@ export default function GuestPage() {
 
   const handleGuestLogin = async () => {
     start(async () => {
+      // guest login hit
       const result: any = await createGuest();
       if (!result?.success) {
         console.error(result);

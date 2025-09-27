@@ -1,37 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 import { useEffect, useState, useTransition } from "react";
 
 export default function GuestUserProfile() {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, startTransition] = useTransition();
 
   const loadUserData = () => {
-    start(async () => {
+    startTransition(async () => {
       setLoading(true);
-      setError(null);
 
-      try {
-        const res = await fetch("/api/current-user", {
-          method: "GET",
-          credentials: "include", // important so cookies (access_token) are sent
-        });
+      const { user } = await getCurrentUser();
 
-        const result = await res.json();
-
-        if (result?.success && result?.user) {
-          setUser(result.user);
-        } else {
-          setError(result?.message || "Failed to load user data");
-        }
-      } catch (err: any) {
-        setError(err?.message || "Network error");
-      } finally {
-        setLoading(false);
+      if (user) {
+        setUser(user);
+      } else {
+        console.log(user, "failed to load user");
       }
+
+      setLoading(false);
     });
   };
 
@@ -43,21 +33,6 @@ export default function GuestUserProfile() {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-gray-600">Loading user data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-        <div className="text-red-700 font-medium">Error loading user data</div>
-        <div className="text-red-600 text-sm mt-1">{error}</div>
-        <button
-          onClick={loadUserData}
-          className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-        >
-          Retry
-        </button>
       </div>
     );
   }
