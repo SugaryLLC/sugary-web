@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/context/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ensureUserSession } from "@/lib/auto-guest-login";
 import { UserProvider } from "@/context/UserProvider";
 
 const poppins = Poppins({
@@ -20,6 +21,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await ensureUserSession();
   return (
     <html lang="en">
       <body className={poppins.className} suppressHydrationWarning>
