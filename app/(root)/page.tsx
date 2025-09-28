@@ -45,9 +45,6 @@ export default function Home() {
 
       <GuestLogin /> */}
       Home
-      <PrimaryButton className="flex items-center gap-2">
-        Open Modal
-      </PrimaryButton>
     </div>
   );
 }

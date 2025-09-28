@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { api } from "@/lib/api";
@@ -5,7 +6,7 @@ import { cookies } from "next/headers";
 
 export async function createGuestUser() {
   try {
-    const res = await api("/Account/Guest", {
+    const res = await api("/Auth/Guest", {
       method: "POST",
       headers: {
         accept: "application/json",
@@ -47,10 +48,10 @@ export async function createGuestUser() {
       status: res.status,
       message: data?.Message || raw || "Failed to create guest user",
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
-      message: err?.message || "Network error",
+      message: err instanceof Error ? err.message : "Network error",
     };
   }
 }

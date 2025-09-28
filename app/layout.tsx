@@ -5,6 +5,8 @@ import ThemeProvider from "@/context/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ensureUserSession } from "@/lib/auto-guest-login";
 import { UserProvider } from "@/context/UserProvider";
+import { Toaster } from "sonner";
+import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,6 +30,12 @@ export default async function RootLayout({
         <ThemeProvider>
           <TooltipProvider>
             <UserProvider>{children}</UserProvider>
+            {/* Google Identity Services SDK */}
+            <Script
+              src="https://accounts.google.com/gsi/client"
+              strategy="afterInteractive"
+            />
+            <Toaster />
           </TooltipProvider>
         </ThemeProvider>
       </body>

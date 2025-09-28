@@ -10,10 +10,12 @@ import { PrimaryButton } from "./buttons/PrimaryButton";
 import { CustomModal } from "./popover/CustomModal";
 import { SignUpForm } from "@/app/auth/SignUpForm";
 import { useCurrentUser } from "@/context/UserProvider";
+import { FormTab } from "./form-tab/FormTab";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openLogin, setOpenLogin] = useState(false);
   const { currentUser, loading } = useCurrentUser();
   const isGuest = currentUser?.IsGuest || !currentUser;
 
@@ -57,8 +59,14 @@ export function Navbar() {
           {/* Avatar and Mobile Menu Button */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-4">
-              <Button>Button</Button>
-              <PrimaryButton>Login</PrimaryButton>
+              <CustomModal
+                open={openLogin}
+                onOpenChange={setOpenLogin}
+                trigger={<PrimaryButton>Login</PrimaryButton>}
+                title=" "
+              >
+                <FormTab />
+              </CustomModal>
               <CustomModal
                 open={open}
                 onOpenChange={setOpen}

@@ -40,11 +40,11 @@ export function SignUpForm({}) {
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      FirstName: currentUser?.FirstName || "",
-      LastName: currentUser?.LastName || "",
-      Email: currentUser?.Email || "",
+      FirstName: "",
+      LastName: "",
+      Email: "",
       Password: "",
-      Avatar: currentUser?.Avatar || "",
+      Avatar: undefined,
     },
   });
 
@@ -53,10 +53,18 @@ export function SignUpForm({}) {
     setError(null);
 
     try {
-      const result = await signup({
-        ...values,
-        GuestUserId: currentUser?.Id ?? "",
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          GuestUserId: currentUser?.Id ?? "",
+        }),
       });
+
+      const result = await response.json();
 
       if (result.success) {
         setSuccess(true);
@@ -149,23 +157,6 @@ export function SignUpForm({}) {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="********" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="Avatar"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Avatar (optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="ProfilePic/uploaded_file.png"
-                    {...field}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

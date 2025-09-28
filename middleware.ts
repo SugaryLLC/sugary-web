@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function middleware(req: Request) {
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
   const hasToken = req.cookies.get("access_token");
   if (!hasToken) {
     // create guest from backend API
     const apiRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/Account/Guest`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/Auth/Guest`,
       {
         method: "POST",
         headers: {

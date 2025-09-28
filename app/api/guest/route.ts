@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { api } from "@/lib/api";
 
 export async function POST() {
-  const res = await api("/Account/Guest", {
+  const res = await api("/Auth/Guest", {
     method: "POST",
     headers: { "Content-Type": "application/json", accept: "application/json" },
     cache: "no-store",

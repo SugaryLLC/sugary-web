@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +39,13 @@ export const CustomModal: React.FC<CustomModalProps> = ({
       >
         {title && (
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            {title ? (
+              <DialogTitle>{title}</DialogTitle>
+            ) : (
+              <VisuallyHidden>
+                <DialogTitle>Modal</DialogTitle>
+              </VisuallyHidden>
+            )}
           </DialogHeader>
         )}
         {children}

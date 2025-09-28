@@ -34,7 +34,7 @@ export function UserProfile({ user }: any) {
               {user?.FullName}
             </span>
             <span className="text-xs text-muted-foreground group-hover:text-muted-foreground/80 transition-colors duration-200">
-              {user?.email}
+              {user?.Email}
             </span>
           </div>
           <ChevronDown
@@ -53,7 +53,7 @@ export function UserProfile({ user }: any) {
         <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors duration-200">
           <Avatar className="h-10 w-10 ring-2 ring-primary/10">
             <AvatarImage
-              src={convertedImageUrl(user?.Avatar, "md") || undefined}
+              src={convertedImageUrl(user?.Avatar, "md") || ""}
               alt={user?.FullName || "User"}
             />
             <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-sm font-semibold">
@@ -64,7 +64,7 @@ export function UserProfile({ user }: any) {
             <span className="text-sm font-semibold text-foreground">
               {user?.FullName}
             </span>
-            <span className="text-xs text-muted-foreground">{user?.email}</span>
+            <span className="text-xs text-muted-foreground">{user?.Email}</span>
           </div>
         </div>
 

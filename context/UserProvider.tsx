@@ -20,8 +20,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     const result = await getCurrentUser();
     if (result.success) {
+      console.log("Current user:", result.user);
       setCurrentUser(result.user);
     } else {
+      console.log("⚠️ No user found");
       setCurrentUser(null);
     }
     setLoading(false);
