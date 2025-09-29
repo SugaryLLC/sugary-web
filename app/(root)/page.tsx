@@ -1,5 +1,3 @@
-import { PrimaryButton } from "@/components/buttons/PrimaryButton";
-
 export default function Home() {
   return (
     <div className="m-5 flex-col gap-4 flex items-center justify-center">

@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
-import { signup } from "@/actions/auth/signup";
 import { useCurrentUser } from "@/context/UserProvider";
 import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 

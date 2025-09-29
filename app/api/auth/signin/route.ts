@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
 import { api } from "@/lib/api";
 import { cookies } from "next/headers";
@@ -7,19 +8,19 @@ export async function POST(req: Request) {
   try {
     const payload = await req.json();
 
-    const res = await api("/Auth/SignUp", {
+    const res = await api("/Auth/Login", {
       method: "POST",
       body: JSON.stringify(payload),
     });
 
-    const data: any = await res.json().catch(() => null);
+    const result = await res.json().catch(() => null);
 
-    if (!res.ok || !data?.Success) {
+    if (!res.ok || !result?.Success) {
       return NextResponse.json(
         {
           success: false,
           status: res.status,
-          message: data?.Message || "Signup failed",
+          message: result?.Message || "Login failed",
         },
         { status: res.status }
       );
@@ -33,35 +34,39 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
     };
 
-    if (data.Token) {
-      cookieStore.set("access_token", data.Token, {
+    if (result.Token) {
+      cookieStore.set("access_token", result.Token, {
         ...base,
         httpOnly: true,
-        expires: data.AccessTokenExpiresAt
-          ? new Date(data.AccessTokenExpiresAt)
+        expires: result.AccessTokenExpiresAt
+          ? new Date(result.AccessTokenExpiresAt)
           : undefined,
       });
     }
 
-    if (data.RefreshToken) {
-      cookieStore.set("refresh_token", data.RefreshToken, {
+    if (result.RefreshToken) {
+      cookieStore.set("refresh_token", result.RefreshToken, {
         ...base,
         httpOnly: true,
-        expires: data.RefreshTokenExpiresAt
-          ? new Date(data.RefreshTokenExpiresAt)
+        expires: result.RefreshTokenExpiresAt
+          ? new Date(result.RefreshTokenExpiresAt)
           : undefined,
       });
     }
 
     return NextResponse.json({
       success: true,
-      user: data.User ?? null,
-      token: data.Token,
-      refreshToken: data.RefreshToken,
+      user: result.User ?? null,
+      token: result.Token,
+      refreshToken: result.RefreshToken,
     });
   } catch (err: any) {
     return NextResponse.json(
-      { success: false, status: 0, message: err?.message || "Network error" },
+      {
+        success: false,
+        status: 0,
+        message: err?.message || "Unexpected error",
+      },
       { status: 500 }
     );
   }

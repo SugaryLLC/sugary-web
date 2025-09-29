@@ -10,8 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import LoginForm from "@/app/auth/LoginForm";
-import { SignUpForm } from "@/app/auth/SignUpForm";
+import LoginForm from "@/components/auth/LoginForm";
+import { SignUpForm } from "@/components/auth/SignUpForm";
 
 export function FormTab() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");

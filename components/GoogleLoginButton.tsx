@@ -66,7 +66,7 @@ export default function GoogleLoginButton() {
     };
 
     loadGoogleScript();
-  }, []);
+  });
 
   async function handleCredentialResponse(response: any) {
     if (isLoading) return;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
-import { login } from "@/actions/auth/login";
 import { toast } from "sonner";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { useCurrentUser } from "@/context/UserProvider";
@@ -45,19 +45,27 @@ export default function LoginForm() {
     setLoading(true);
     setError(null);
 
-    const result = await login(values);
+    try {
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
 
-    if (result.success) {
-      await refreshUser();
-      console.log("✅ Logged in:", result);
-      toast("Logged in successfully.");
-    } else {
-      setError(result.message || "Login failed");
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        await refreshUser();
+        console.log("✅ Logged in:", result);
+        toast("Logged in successfully.");
+      } else {
+        setError(result.message || "Login failed");
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error");
     }
 
     setLoading(false);
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

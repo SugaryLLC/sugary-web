@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { UserProfile } from "./UserProfile";
 import { UserProfileSkeleton } from "./UserProfileSkeleton";
 import { PrimaryButton } from "./buttons/PrimaryButton";
 import { CustomModal } from "./popover/CustomModal";
-import { SignUpForm } from "@/app/auth/SignUpForm";
+import { SignUpForm } from "@/components/auth/SignUpForm";
 import { useCurrentUser } from "@/context/UserProvider";
 import { FormTab } from "./form-tab/FormTab";
 
@@ -17,7 +16,6 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
   const { currentUser, loading } = useCurrentUser();
-  const isGuest = currentUser?.IsGuest || !currentUser;
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
