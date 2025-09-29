@@ -4,12 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
-  },
-  "engines": {
-    "node": "18.x"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
