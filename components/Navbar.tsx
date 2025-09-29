@@ -1,17 +1,25 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { ThemeSwitcher } from "./ui/ThemeSwitcher";
+import { UserProfile } from "./UserProfile";
+import { UserProfileSkeleton } from "./UserProfileSkeleton";
+import { PrimaryButton } from "./buttons/PrimaryButton";
+import { CustomModal } from "./popover/CustomModal";
+import { SignUpForm } from "@/components/auth/SignUpForm";
+import { useCurrentUser } from "@/context/UserProvider";
+import { FormTab } from "./form-tab/FormTab";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [openLogin, setOpenLogin] = useState(false);
+  const { currentUser, loading } = useCurrentUser();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center">
@@ -47,12 +55,32 @@ export function Navbar() {
           </div>
 
           {/* Avatar and Mobile Menu Button */}
-          <div className="flex items-center space-x-4">
-            <ThemeSwitcher />
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
+              <CustomModal
+                open={openLogin}
+                onOpenChange={setOpenLogin}
+                trigger={<PrimaryButton>Login</PrimaryButton>}
+                title=" "
+              >
+                <FormTab />
+              </CustomModal>
+              <CustomModal
+                open={open}
+                onOpenChange={setOpen}
+                trigger={<PrimaryButton>Sign Up</PrimaryButton>}
+                title="Create Your Account"
+              >
+                <SignUpForm />
+              </CustomModal>
+            </div>
+            {/* <ThemeSwitcher /> */}
+
+            {loading ? (
+              <UserProfileSkeleton />
+            ) : (
+              <UserProfile user={currentUser} />
+            )}
 
             {/* Mobile menu button */}
             <Button

@@ -26,11 +26,9 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
       )}
       {...props}
     >
-      <>
-        <span>{icon && iconPosition === "left" && icon}</span>
-        <span>{children}</span>
-        <span>{icon && iconPosition === "right" && icon}</span>
-      </>
+      <span>{icon && iconPosition === "left" && icon}</span>
+      <span>{children}</span>
+      <span>{icon && iconPosition === "right" && icon}</span>
     </Button>
   );
 };

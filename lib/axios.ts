@@ -3,7 +3,7 @@
 import axios, { AxiosError } from "axios";
 
 // Create Axios instance
-const api = axios.create({
+const axiosApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
@@ -12,7 +12,7 @@ const api = axios.create({
 });
 
 // Request interceptor
-api.interceptors.request.use(
+axiosApi.interceptors.request.use(
   (config) => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -25,7 +25,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor (global error handling)
-api.interceptors.response.use(
+axiosApi.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response) {
@@ -46,4 +46,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default axiosApi;

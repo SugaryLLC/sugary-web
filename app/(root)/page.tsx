@@ -1,19 +1,7 @@
-"use client";
-import { IconButton } from "@/components/buttons/IconButton";
-import { PrimaryButton } from "@/components/buttons/PrimaryButton";
-import { SecondaryButton } from "@/components/buttons/SecondaryButton";
-import { CustomModal } from "@/components/popover/CustomModal";
-import { CustomTooltip } from "@/components/tooltip/CustomTooltip";
-
-import { Info, Sun } from "lucide-react";
-import { useState } from "react";
-import GuestLogin from "../pages/GuestLogin";
-
 export default function Home() {
-  const [open, setOpen] = useState(false);
   return (
     <div className="m-5 flex-col gap-4 flex items-center justify-center">
-      <PrimaryButton>Button</PrimaryButton>
+      {/* <PrimaryButton>Button</PrimaryButton>
       <SecondaryButton icon={<Sun size={14} />} iconPosition="right">
         Toggle Theme
       </SecondaryButton>
@@ -53,7 +41,8 @@ export default function Home() {
         </div>
       </CustomModal>
 
-      <GuestLogin />
+      <GuestLogin /> */}
+      Home
     </div>
   );
 }
