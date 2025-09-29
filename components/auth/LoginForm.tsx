@@ -20,6 +20,7 @@ import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { useCurrentUser } from "@/context/UserProvider";
+import AppleLoginButton from "../AppleLoginButton";
 
 const loginSchema = z.object({
   UserName: z.string().email("Invalid email"),
@@ -143,6 +144,7 @@ export default function LoginForm() {
         </p>
         {/* Google Identity Services SDK */}
         <GoogleLoginButton />
+        <AppleLoginButton />
       </form>
     </Form>
   );
