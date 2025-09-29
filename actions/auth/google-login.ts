@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { cookies } from "next/headers";
 
 export async function socialLoginGoogle(payload: {
+  Provider?: string;
   Token: string; // Can be either ID token or access token
   GuestUserId?: string;
   FirstName?: string;
