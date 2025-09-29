@@ -86,7 +86,7 @@ export default function GoogleLoginButton() {
         Token: idToken,
         FirstName: currentUser?.FirstName,
         LastName: currentUser?.LastName,
-        GuestUserId: guestId ? String(guestId) : undefined,
+        GuestUserId: currentUser?.Id,
       });
 
       if (result.success) {
