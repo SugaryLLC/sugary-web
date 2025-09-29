@@ -8,6 +8,7 @@ type UserContextType = {
   loading: boolean;
   refreshUser: () => Promise<void>;
   setCurrentUser: (user: User | null) => void;
+  logout: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,7 +21,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     const result = await getCurrentUser();
     if (result.success) {
-      console.log("Current user:", result.user);
+      console.log("🙋‍♂️ Current user:", result.user);
       setCurrentUser(result.user);
     } else {
       console.log("⚠️ No user found");
@@ -28,6 +29,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
     setLoading(false);
   };
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "GET" });
+    setCurrentUser(null);
+  }
 
   useEffect(() => {
     refreshUser(); // runs once client-side
@@ -35,7 +40,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ currentUser, loading, refreshUser, setCurrentUser }}
+      value={{ currentUser, loading, refreshUser, setCurrentUser, logout }}
     >
       {children}
     </UserContext.Provider>

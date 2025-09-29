@@ -53,9 +53,11 @@ export default function GoogleLoginButton() {
             window.google.accounts.id.renderButton(buttonElement, {
               theme: "outline",
               size: "large",
-              width: "100%",
+              width: 350,
               text: "signin_with",
               shape: "rectangular",
+              margin: "0 auto"!,
+              border_radius: "12",
             });
           }
         } catch (error) {
