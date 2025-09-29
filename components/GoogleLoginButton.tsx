@@ -84,8 +84,8 @@ export default function GoogleLoginButton() {
       const result = await socialLoginGoogle({
         Provider: "google",
         Token: idToken,
-        FirstName: payload.given_name,
-        LastName: payload.family_name,
+        FirstName: currentUser?.FirstName,
+        LastName: currentUser?.LastName,
         GuestUserId: guestId ? String(guestId) : undefined,
       });
 
