@@ -26,7 +26,7 @@ export default function AppleLoginButton() {
       window.AppleID?.auth.init({
         clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
         scope: "email name",
-        redirectURI: "https://sugary-web-dev-new-1.vercel.app/apple",
+        redirectURI: "https://sugarywebdev.netlify.app/apple",
         usePopup: true,
       });
       setAppleReady(true);
@@ -44,10 +44,9 @@ export default function AppleLoginButton() {
 
       const result = await socialLoginApple({
         Token: identityToken,
-        FirstName: user?.name?.firstName,
-        LastName: user?.name?.lastName,
-        GuestUserId:
-          currentUser?.Id || localStorage.getItem("guestUserId") || undefined,
+        FirstName: currentUser?.FirstName,
+        LastName: currentUser?.LastName,
+        GuestUserId: currentUser?.Id,
         IsWeb: true,
       });
 
