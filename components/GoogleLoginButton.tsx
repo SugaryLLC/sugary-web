@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { socialLoginGoogle } from "@/actions/auth/google-login";
+import { useCurrentUser } from "@/context/UserProvider";
 
 declare global {
   interface Window {
@@ -15,7 +16,8 @@ declare global {
 export default function GoogleLoginButton() {
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { currentUser } = useCurrentUser();
+  const guestId = currentUser?.IsGuest;
   useEffect(() => {
     // Load Google Script if not already loaded
     const loadGoogleScript = () => {
@@ -79,10 +81,11 @@ export default function GoogleLoginButton() {
       const payload = JSON.parse(atob(idToken.split(".")[1]));
 
       const result = await socialLoginGoogle({
+        Provider: "google",
         Token: idToken,
         FirstName: payload.given_name,
         LastName: payload.family_name,
-        GuestUserId: getGuestUserId(),
+        GuestUserId: guestId ? String(guestId) : undefined,
       });
 
       if (result.success) {
@@ -102,16 +105,16 @@ export default function GoogleLoginButton() {
     }
   }
 
-  function getGuestUserId(): string | undefined {
-    if (typeof window !== "undefined") {
-      try {
-        return localStorage.getItem("guestUserId") || undefined;
-      } catch {
-        return undefined;
-      }
-    }
-    return undefined;
-  }
+  // function getGuestUserId(): string | undefined {
+  //   if (typeof window !== "undefined") {
+  //     try {
+  //       return localStorage.getItem("guestUserId") || undefined;
+  //     } catch {
+  //       return undefined;
+  //     }
+  //   }
+  //   return undefined;
+  // }
 
   const handleFallbackClick = () => {
     if (!isGoogleLoaded) {
