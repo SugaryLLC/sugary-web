@@ -55,9 +55,11 @@ export default function GoogleLoginButton() {
             window.google.accounts.id.renderButton(buttonElement, {
               theme: "outline",
               size: "large",
-              width: "100%",
+              width: 350,
               text: "signin_with",
               shape: "rectangular",
+              margin: "0 auto"!,
+              border_radius: "12",
             });
           }
         } catch (error) {
@@ -72,7 +74,6 @@ export default function GoogleLoginButton() {
 
   async function handleCredentialResponse(response: any) {
     if (isLoading) return;
-
     setIsLoading(true);
     try {
       const idToken = response.credential; // JWT from Google
