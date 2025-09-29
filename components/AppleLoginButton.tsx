@@ -26,7 +26,7 @@ export default function AppleLoginButton() {
       window.AppleID?.auth.init({
         clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
         scope: "email name",
-        redirectURI: "https://gift.sugary.me/apple",
+        redirectURI: "https://sugary-web-dev-new-1.vercel.app/apple",
         usePopup: true,
       });
       setAppleReady(true);
