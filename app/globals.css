@@ -156,7 +156,7 @@ body {
   --muted-foreground: 215 20.2% 65.1%;
 }
 
-[data-theme="dark"] {
+/* [data-theme="dark"] {
   --bg: #111827;
   --text: #f9fafb;
   --primary: #4f46e5;
@@ -166,7 +166,7 @@ body {
   --bg: #eff6ff;
   --text: #1e3a8a;
   --primary: #2563eb;
-}
+} */
 
 
 body {

@@ -30,7 +30,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const { refreshUser } = useCurrentUser();
+  const { refreshUser, currentUser } = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,6 +67,13 @@ export default function LoginForm() {
 
     setLoading(false);
   }
+  const handleForgotPassword = async () => {
+    const email = currentUser?.Email;
+    const res = await fetch(`/api/auth/forgot-pass?email=${email}`);
+    const data = await res.json();
+    toast(data.Message);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -121,8 +128,8 @@ export default function LoginForm() {
             <span>Remember me</span>
           </label>
           <a
-            href="#"
-            className="text-primary hover:text-primary/80 transition-colors"
+            onClick={handleForgotPassword}
+            className="text-primary hover:text-primary/80 transition-colors cursor-pointer"
           >
             Forgot password?
           </a>

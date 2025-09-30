@@ -12,6 +12,7 @@ import {
 import { useCurrentUser } from "@/context/UserProvider";
 import { convertedImageUrl } from "@/lib/avatar";
 import { User, LogOut, ChevronDown } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -84,13 +85,17 @@ export function UserProfile({ user }: any) {
         </div>
 
         <DropdownMenuSeparator className="my-2" />
-        <DropdownMenuItem
-          className="cursor-pointer rounded-lg p-3 transition-all duration-200 group
+        <Link href="/account">
+          <DropdownMenuItem
+            className="cursor-pointer rounded-lg p-3 transition-all duration-200 group
              hover:bg-gray-100 text-foreground"
-        >
-          <User className="mr-3 h-4 w-4 text-muted-foreground group-text-primary transition-colors duration-200" />
-          <span className="font-medium text-[var(--primary)]">My Account</span>
-        </DropdownMenuItem>
+          >
+            <User className="mr-3 h-4 w-4 text-muted-foreground group-text-primary transition-colors duration-200" />
+            <span className="font-medium text-[var(--primary)]">
+              My Account
+            </span>
+          </DropdownMenuItem>
+        </Link>
 
         {!isGuestUser && (
           <DropdownMenuItem
