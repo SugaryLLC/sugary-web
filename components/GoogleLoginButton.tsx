@@ -83,13 +83,28 @@ export default function GoogleOAuthButton() {
             }
 
             const peopleData = await peopleRes.json();
-            console.log("Google People API response:", peopleData);
+            console.log("Google People API full response:", peopleData);
 
-            // Extract profile information
-            const firstName = peopleData.names?.[0]?.givenName || "";
-            const lastName = peopleData.names?.[0]?.familyName || "";
-            const avatar = peopleData.photos?.[0]?.url || "";
-            const email = peopleData.emailAddresses?.[0]?.value || "";
+            // Extract profile information with proper null checking
+            // Names array contains objects with givenName and familyName
+            const primaryName =
+              peopleData.names?.find((n: any) => n.metadata?.primary) ||
+              peopleData.names?.[0];
+            const firstName = primaryName?.givenName || "";
+            const lastName = primaryName?.familyName || "";
+
+            // Photos array contains objects with url property
+            const primaryPhoto =
+              peopleData.photos?.find((p: any) => p.metadata?.primary) ||
+              peopleData.photos?.[0];
+            const avatar = primaryPhoto?.url || "";
+
+            // Email addresses
+            const primaryEmail =
+              peopleData.emailAddresses?.find(
+                (e: any) => e.metadata?.primary
+              ) || peopleData.emailAddresses?.[0];
+            const email = primaryEmail?.value || "";
 
             console.log("Extracted profile:", {
               firstName,
@@ -111,6 +126,20 @@ export default function GoogleOAuthButton() {
               // Gender: gender,
               // Birthday: birthday,
             };
+
+            console.log("Sending payload to backend:", payload);
+
+            // Verify data before sending
+            if (!firstName || !lastName) {
+              console.warn(
+                "⚠️ Missing name data from Google. Check API response."
+              );
+            }
+            if (!avatar) {
+              console.warn(
+                "⚠️ Missing avatar from Google. Check API response."
+              );
+            }
 
             // Call your server action
             const result = await socialLoginGoogle(payload);
