@@ -65,14 +65,6 @@ export function Navbar() {
               >
                 <FormTab />
               </CustomModal>
-              <CustomModal
-                open={open}
-                onOpenChange={setOpen}
-                trigger={<PrimaryButton>Sign Up</PrimaryButton>}
-                title="Create Your Account"
-              >
-                <SignUpForm />
-              </CustomModal>
             </div>
             {/* <ThemeSwitcher /> */}
 

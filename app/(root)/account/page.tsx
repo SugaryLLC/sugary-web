@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -30,6 +31,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { convertedImageUrl } from "@/lib/avatar";
 
 const accountFormSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -50,7 +52,7 @@ const accountFormSchema = z.object({
 type AccountFormValues = z.infer<typeof accountFormSchema>;
 
 export default function AccountSettings() {
-  const { currentUser } = useCurrentUser();
+  const { currentUser }: any = useCurrentUser();
   const [otpStep, setOtpStep] = useState<"idle" | "sent" | "verified">("idle");
   const [otpValue, setOtpValue] = useState<string[]>(["", "", "", "", "", ""]);
   const [message, setMessage] = useState("");
@@ -180,13 +182,13 @@ export default function AccountSettings() {
       {/* Profile Section */}
       <div className="relative mb-8 overflow-hidden rounded-3xl bg-card p-6 shadow-sm">
         <div className="absolute inset-0 -z-0">
-          <Image
+          {/* <Image
             width={80}
             height={80}
             src="/colorful-abstract-geometric-pattern-with-red-yello.jpg"
             alt="Cover"
             className="h-full w-full object-cover"
-          />
+          /> */}
         </div>
 
         <div className="relative mb-4 flex justify-end gap-2">
@@ -206,7 +208,10 @@ export default function AccountSettings() {
               <Image
                 width={80}
                 height={80}
-                src="/friendly-dog-portrait.jpg"
+                src={
+                  convertedImageUrl(currentUser?.Avatar, "md") ||
+                  "/default-avatar.png"
+                }
                 alt="Profile picture"
                 className="h-full w-full object-cover"
               />
@@ -339,8 +344,8 @@ export default function AccountSettings() {
         </div>
 
         {/* Phone */}
-        <div className="rounded-full  py-[10px] px-4">
-          <div className="flex flex-col gap-2">
+        <div className="rounded-full bg-card py-2 px-4">
+          <div className="flex flex-col gap-2 bg-card">
             <div className="flex items-center justify-between">
               <div className="flex flex-1 items-center gap-2">
                 {/* Country Code */}

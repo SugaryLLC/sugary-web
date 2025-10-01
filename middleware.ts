@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { api } from "./lib/api";
 
 const protectedRoutes = ["/dashboard", "/account", "/orders"]; // adjust as needed
 
@@ -11,16 +12,9 @@ export async function middleware(req: NextRequest) {
   if (!hasToken) {
     // Create guest session for public pages
     if (!protectedRoutes.some((route) => pathname.startsWith(route))) {
-      const apiRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/Auth/Guest`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-        }
-      );
+      const apiRes = await api("/Auth/Guest", {
+        method: "POST",
+      });
 
       const data = await apiRes.json();
 

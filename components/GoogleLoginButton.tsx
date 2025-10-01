@@ -72,20 +72,25 @@ export default function GoogleOAuthButton() {
 
             const accessToken = tokenResponse.access_token;
 
-            // GuestUserId should be your app's guest id - prefer currentUser.Id (if present)
-
-            // Build single payload object to match your backend contract
+            // 🔑 Fetch profile info from Google
+            const userInfoRes = await fetch(
+              "https://www.googleapis.com/oauth2/v3/userinfo",
+              {
+                headers: { Authorization: `Bearer ${accessToken}` },
+              }
+            );
+            const profile = await userInfoRes.json();
             const payload = {
               Provider: "google",
               Token: accessToken, // access token (People API)
-              FirstName: currentUser?.FirstName,
-              LastName: currentUser?.LastName,
+              FirstName: profile?.FirstName,
+              LastName: profile?.LastName,
               GuestUserId: currentUser?.Id,
               IsWeb: true,
             };
 
             // Call your server action (server-side will call /Auth/Social/Login and set cookies)
-            const result = await socialLoginGoogle(payload as any);
+            const result = await socialLoginGoogle(payload);
 
             if (result?.success) {
               toast.success("✅ Logged in with Google");
