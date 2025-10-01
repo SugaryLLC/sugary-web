@@ -74,6 +74,11 @@ export default function AccountSettings() {
   const [phoneMessage, setPhoneMessage] = useState("");
   const [loadingPhone, setLoadingPhone] = useState(false);
   const [showPhoneOtpInput, setPhoneShowOtpInput] = useState(false);
+
+  // ⚠️ New States for Delete Account
+  const [deleteCategory, setDeleteCategory] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -185,6 +190,37 @@ export default function AccountSettings() {
       setLoadingPhone(false);
     }
   }
+
+  // 🗑️ Handle Delete Account
+  async function handleDeleteAccount() {
+    if (!deleteCategory || !deleteReason) {
+      toast.error("Please select a category and enter a reason");
+      return;
+    }
+
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(
+        `/api/account/delete-account?category=${encodeURIComponent(
+          deleteCategory
+        )}&reason=${encodeURIComponent(deleteReason)}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json();
+
+      if (data?.Success) {
+        toast.success("✅ Account deleted successfully");
+      } else {
+        toast.error(data?.Message || "Failed to delete account");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Unexpected error while deleting account");
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl p-4 md:p-6">
       {/* Header */}
@@ -626,6 +662,42 @@ export default function AccountSettings() {
           Update My Details
         </Button>
       </form>
+      {/* 🗑️ Delete Account Section */}
+      <div className="mt-10 space-y-4 border-t pt-6">
+        <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+        <p className="text-sm text-muted-foreground">
+          Deleting your account is permanent and cannot be undone.
+        </p>
+
+        {/* Category */}
+        <Select onValueChange={setDeleteCategory}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select reason category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="privacy">Privacy Concern</SelectItem>
+            <SelectItem value="not-needed">No longer needed</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Reason */}
+        <Input
+          placeholder="Write your reason here..."
+          value={deleteReason}
+          onChange={(e) => setDeleteReason(e.target.value)}
+        />
+
+        {/* Delete Button */}
+        <Button
+          variant="destructive"
+          className="w-full"
+          onClick={handleDeleteAccount}
+          disabled={deleteLoading}
+        >
+          {deleteLoading ? "Deleting..." : "Delete Account"}
+        </Button>
+      </div>
     </div>
   );
 }

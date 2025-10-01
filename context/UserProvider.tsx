@@ -5,7 +5,6 @@ import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 
 type UserContextType = {
   currentUser: User | null;
-  loading: boolean;
   refreshUser: () => Promise<void>;
   setCurrentUser: (user: User | null) => void;
   logout: () => Promise<void>;
@@ -13,34 +12,45 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export function UserProvider({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser: User | null;
+}) {
+  const [currentUser, setCurrentUser] = useState<User | null>(initialUser);
 
   const refreshUser = async () => {
-    setLoading(true);
     const result = await getCurrentUser();
     if (result.success) {
-      console.log("🙋‍♂️ Current user:", result.user);
       setCurrentUser(result.user);
     } else {
-      console.log("⚠️ No user found");
+      console.warn("⚠️ Failed to refresh user, fallback to null/guest");
       setCurrentUser(null);
     }
-    setLoading(false);
   };
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "GET" });
     setCurrentUser(null);
+    // Force reload so middleware can create a new guest session
+    window.location.reload();
   }
-
+  // Background refresh to update if stale
   useEffect(() => {
-    refreshUser(); // runs once client-side
+    if (!initialUser) {
+      refreshUser(); // first time guest fallback
+    } else {
+      // Still refresh to ensure validity
+      refreshUser();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <UserContext.Provider
-      value={{ currentUser, loading, refreshUser, setCurrentUser, logout }}
+      value={{ currentUser, refreshUser, setCurrentUser, logout }}
     >
       {children}
     </UserContext.Provider>

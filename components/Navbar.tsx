@@ -7,13 +7,11 @@ import { UserProfile } from "./UserProfile";
 import { UserProfileSkeleton } from "./UserProfileSkeleton";
 import { PrimaryButton } from "./buttons/PrimaryButton";
 import { CustomModal } from "./popover/CustomModal";
-import { SignUpForm } from "@/components/auth/SignUpForm";
 import { useCurrentUser } from "@/context/UserProvider";
 import { FormTab } from "./form-tab/FormTab";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [open, setOpen] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
   const { currentUser, loading } = useCurrentUser();
 

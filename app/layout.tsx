@@ -3,10 +3,10 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/context/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ensureUserSession } from "@/lib/auto-guest-login";
 import { UserProvider } from "@/context/UserProvider";
 import { Toaster } from "sonner";
 import Script from "next/script";
+import { getCurrentUser } from "@/actions/auth/getCurrentUser";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,13 +23,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await ensureUserSession();
+  const result = await getCurrentUser();
+  const initialUser = result.success ? result.user : null;
+
   return (
     <html lang="en">
       <body className={poppins.className} suppressHydrationWarning>
         <ThemeProvider>
           <TooltipProvider>
-            <UserProvider>{children}</UserProvider>
+            <UserProvider initialUser={initialUser}>{children}</UserProvider>
             {/* Google Identity Services SDK */}
             <Script
               src="https://accounts.google.com/gsi/client"

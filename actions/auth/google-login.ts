@@ -27,6 +27,10 @@ export async function socialLoginGoogle(payload: {
 
     const res = await api("/Auth/Social/Login", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
       body: JSON.stringify(body),
     });
 
