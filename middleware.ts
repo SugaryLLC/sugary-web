@@ -7,9 +7,9 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const { pathname } = req.nextUrl;
 
-  const hasToken = req.cookies.get("access_token");
+  const accessToken = req.cookies.get("access_token");
 
-  if (!hasToken) {
+  if (!accessToken) {
     // Create guest session for public pages
     if (!protectedRoutes.some((route) => pathname.startsWith(route))) {
       const apiRes = await api("/Auth/Guest", {
@@ -44,7 +44,29 @@ export async function middleware(req: NextRequest) {
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
   }
+  try {
+    const userRes = await api("/Account/GetUser", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+    });
 
+    if (userRes.ok) {
+      const user = await userRes.json();
+
+      if (
+        user?.IsGuest &&
+        protectedRoutes.some((route) => pathname.startsWith(route))
+      ) {
+        const loginUrl = new URL("/", req.url);
+        loginUrl.searchParams.set("from", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+  } catch (err) {
+    console.error("❌ Error checking user in middleware:", err);
+  }
   return res;
 }
 

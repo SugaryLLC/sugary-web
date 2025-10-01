@@ -7,6 +7,7 @@ import {
   Upload,
   Check,
   CheckCheckIcon,
+  BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { convertedImageUrl } from "@/lib/avatar";
+import { toast } from "sonner";
 
 const accountFormSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -96,13 +98,19 @@ export default function AccountSettings() {
       setLoading(true);
       const res = await fetch("/api/account/email-otp");
       const data = await res.json();
-      console.log("OTP sent:", data);
-      setOtpStep("sent");
-      setShowOtpInput(true);
-      setMessage("OTP has been sent to your email.");
+
+      if (data.success) {
+        console.log("✅ OTP sent:", data);
+        setOtpStep("sent");
+        setShowOtpInput(true);
+        toast.success("OTP has been sent to your email.");
+      } else {
+        console.warn("⚠️ OTP error:", data);
+        toast.error(data.message || "Failed to send OTP.");
+      }
     } catch (err) {
-      console.error(err);
-      setMessage("Failed to send OTP.");
+      console.error("❌ OTP request failed:", err);
+      toast.error("Failed to send OTP.");
     } finally {
       setLoading(false);
     }
@@ -110,26 +118,35 @@ export default function AccountSettings() {
 
   async function handleSubmitOtp() {
     const otp = otpValue.join("");
-    if (otp.length !== 6) {
-      setMessage("Please enter all 6 digits of OTP.");
+
+    if (otp.length !== 4) {
+      toast.error("❌ Please enter all 4 digits of OTP.");
       return;
     }
 
     try {
       setLoading(true);
+
       const res = await fetch(`/api/account/email-verify?otp=${otp}`);
       const data = await res.json();
+
       console.log("Verification Result:", data);
-      setMessage(data?.Message || "Email verification complete!");
-      setOtpStep("verified");
-      setShowOtpInput(false);
-    } catch (err) {
-      console.error(err);
-      setMessage("Failed to verify OTP.");
+
+      if (res.ok && data?.Success) {
+        toast.success(data?.Message || "✅ Email verification complete!");
+        setOtpStep("verified");
+        setShowOtpInput(false);
+      } else {
+        toast.error(data?.Message || "❌ Failed to verify OTP.");
+      }
+    } catch (err: any) {
+      console.error("Verify OTP error:", err);
+      toast.error(err?.message || "❌ Network error while verifying OTP.");
     } finally {
       setLoading(false);
     }
   }
+
   async function handleVerifyPhone() {
     try {
       setLoadingPhone(true);
@@ -384,7 +401,7 @@ export default function AccountSettings() {
             {showPhoneOtpInput && phoneOtpStep === "sent" && (
               <div className="mt-2 flex flex-col items-center gap-2">
                 <InputOTP
-                  maxLength={6}
+                  maxLength={4}
                   value={phoneOtpValue.join("")}
                   onChange={(val: string) => {
                     const digits = val.replace(/\D/g, "");
@@ -404,19 +421,8 @@ export default function AccountSettings() {
                       index={2}
                       className="w-16 h-16 text-2xl text-center border rounded-lg"
                     />
-                  </InputOTPGroup>
-                  <InputOTPSeparator className="w-4" />
-                  <InputOTPGroup className="flex gap-2">
                     <InputOTPSlot
                       index={3}
-                      className="w-16 h-16 text-2xl text-center border rounded-lg"
-                    />
-                    <InputOTPSlot
-                      index={4}
-                      className="w-16 h-16 text-2xl text-center border rounded-lg"
-                    />
-                    <InputOTPSlot
-                      index={5}
                       className="w-16 h-16 text-2xl text-center border rounded-lg"
                     />
                   </InputOTPGroup>
@@ -473,7 +479,7 @@ export default function AccountSettings() {
                 {loading ? "Sending..." : "Verify"}
               </Button>
             ) : (
-              <CheckCheckIcon size={14} className="text-green-400" />
+              <BadgeCheck size={20} className="text-green-400" />
             )}
           </div>
 
@@ -503,19 +509,8 @@ export default function AccountSettings() {
                       index={2}
                       className="w-16 h-16 text-2xl text-center border rounded-lg"
                     />
-                  </InputOTPGroup>
-                  <InputOTPSeparator className="w-4" />
-                  <InputOTPGroup className="flex gap-2">
                     <InputOTPSlot
                       index={3}
-                      className="w-16 h-16 text-2xl text-center border rounded-lg"
-                    />
-                    <InputOTPSlot
-                      index={4}
-                      className="w-16 h-16 text-2xl text-center border rounded-lg"
-                    />
-                    <InputOTPSlot
-                      index={5}
                       className="w-16 h-16 text-2xl text-center border rounded-lg"
                     />
                   </InputOTPGroup>

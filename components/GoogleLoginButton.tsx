@@ -17,10 +17,10 @@ declare global {
 export default function GoogleOAuthButton() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
-  const { currentUser, refreshUser } = useCurrentUser() as any;
+  const { currentUser, refreshUser } = useCurrentUser() as any; // adapt types as needed
   const router = useRouter();
 
-  // Scopes for additional profile data
+  // exact scopes you requested
   const SCOPES =
     "email profile https://www.googleapis.com/auth/user.gender.read https://www.googleapis.com/auth/user.birthday.read";
 
@@ -56,9 +56,11 @@ export default function GoogleOAuthButton() {
     setIsRequesting(true);
 
     try {
+      // init token client
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         scope: SCOPES,
+        // `callback` will be invoked after token is granted (or denied)
         callback: async (tokenResponse: any) => {
           try {
             if (!tokenResponse || !tokenResponse.access_token) {
@@ -70,85 +72,31 @@ export default function GoogleOAuthButton() {
 
             const accessToken = tokenResponse.access_token;
 
-            // Fetch complete profile info from Google People API
-            const peopleRes = await fetch(
-              "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,genders,birthdays",
-              {
-                headers: { Authorization: `Bearer ${accessToken}` },
-              }
-            );
-
-            if (!peopleRes.ok) {
-              throw new Error("Failed to fetch profile from Google People API");
-            }
-
-            const peopleData = await peopleRes.json();
-            console.log("Google People API full response:", peopleData);
-
-            // Extract profile information with proper null checking
-            // Names array contains objects with givenName and familyName
-            const primaryName =
-              peopleData.names?.find((n: any) => n.metadata?.primary) ||
-              peopleData.names?.[0];
-            const firstName = primaryName?.givenName || "";
-            const lastName = primaryName?.familyName || "";
-
-            // Photos array contains objects with url property
-            const primaryPhoto =
-              peopleData.photos?.find((p: any) => p.metadata?.primary) ||
-              peopleData.photos?.[0];
-            const avatar = primaryPhoto?.url || "";
-
-            // Email addresses
-            const primaryEmail =
-              peopleData.emailAddresses?.find(
-                (e: any) => e.metadata?.primary
-              ) || peopleData.emailAddresses?.[0];
-            const email = primaryEmail?.value || "";
-
-            console.log("Extracted profile:", {
-              firstName,
-              lastName,
-              avatar,
-              email,
-            });
-
+            // // 🔑 Fetch profile info from Google
+            // const userInfoRes = await fetch(
+            //   "https://www.googleapis.com/oauth2/v3/userinfo",
+            //   {
+            //     headers: { Authorization: `Bearer ${accessToken}` },
+            //   }
+            // );
+            // const profile = await userInfoRes.json();
             const payload = {
               Provider: "google",
-              Token: accessToken,
+              Token: accessToken, // access token (People API)
               GuestUserId: currentUser?.Id,
               IsWeb: true,
-              FirstName: firstName,
-              LastName: lastName,
-              Avatar: avatar,
-              // Add these if your backend supports them
-              // Email: email,
-              // Gender: gender,
-              // Birthday: birthday,
             };
 
-            console.log("Sending payload to backend:", payload);
-
-            // Verify data before sending
-            if (!firstName || !lastName) {
-              console.warn(
-                "⚠️ Missing name data from Google. Check API response."
-              );
-            }
-            if (!avatar) {
-              console.warn(
-                "⚠️ Missing avatar from Google. Check API response."
-              );
-            }
-
-            // Call your server action
+            // Call your server action (server-side will call /Auth/Social/Login and set cookies)
             const result = await socialLoginGoogle(payload);
 
             if (result?.success) {
               toast.success("✅ Logged in with Google");
 
+              // Update local user context without full reload (if available)
               if (typeof refreshUser === "function") {
                 await refreshUser();
+                // optionally route to dashboard or home
                 router.push("/");
               } else {
                 window.location.href = "/";
@@ -158,7 +106,7 @@ export default function GoogleOAuthButton() {
               toast.error(result?.message || "Google sign-in failed");
             }
           } catch (err: any) {
-            console.error("Google People API / social login error:", err);
+            console.error("People API / social login error:", err);
             toast.error(err?.message || "Google sign-in failed");
           } finally {
             setIsRequesting(false);
@@ -166,7 +114,7 @@ export default function GoogleOAuthButton() {
         },
       });
 
-      // Request access token with consent prompt to ensure all scopes are granted
+      // Request an access token, prompt for consent to ensure scopes are granted
       tokenClient.requestAccessToken({ prompt: "consent" });
     } catch (err: any) {
       console.error("Google OAuth flow error:", err);

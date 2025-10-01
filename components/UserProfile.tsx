@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 export function UserProfile({ user }: any) {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useCurrentUser();
+  const { logout, currentUser } = useCurrentUser();
 
   const handleLogout = async () => {
     try {
@@ -84,18 +84,20 @@ export function UserProfile({ user }: any) {
           </div>
         </div>
 
-        <DropdownMenuSeparator className="my-2" />
-        <Link href="/account">
-          <DropdownMenuItem
-            className="cursor-pointer rounded-lg p-3 transition-all duration-200 group
+        {!currentUser?.IsGuest && <DropdownMenuSeparator className="my-2" />}
+        {!currentUser?.IsGuest && (
+          <Link href="/account">
+            <DropdownMenuItem
+              className="cursor-pointer rounded-lg p-3 transition-all duration-200 group
              hover:bg-gray-100 text-foreground"
-          >
-            <User className="mr-3 h-4 w-4 text-muted-foreground group-text-primary transition-colors duration-200" />
-            <span className="font-medium text-[var(--primary)]">
-              My Account
-            </span>
-          </DropdownMenuItem>
-        </Link>
+            >
+              <User className="mr-3 h-4 w-4 text-muted-foreground group-text-primary transition-colors duration-200" />
+              <span className="font-medium text-[var(--primary)]">
+                My Account
+              </span>
+            </DropdownMenuItem>
+          </Link>
+        )}
 
         {!isGuestUser && (
           <DropdownMenuItem
