@@ -40,7 +40,7 @@ export default function AppleLoginButton() {
     try {
       const response = await window.AppleID.auth.signIn();
       const identityToken = response.authorization.id_token;
-      const user = response.user;
+      // const user = response.user;
 
       const result = await socialLoginApple({
         Token: identityToken,
