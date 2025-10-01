@@ -17,10 +17,10 @@ declare global {
 export default function GoogleOAuthButton() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
-  const { currentUser, refreshUser } = useCurrentUser() as any; // adapt types as needed
+  const { currentUser, refreshUser } = useCurrentUser() as any;
   const router = useRouter();
 
-  // exact scopes you requested
+  // Scopes for additional profile data
   const SCOPES =
     "email profile https://www.googleapis.com/auth/user.gender.read https://www.googleapis.com/auth/user.birthday.read";
 
@@ -56,11 +56,9 @@ export default function GoogleOAuthButton() {
     setIsRequesting(true);
 
     try {
-      // init token client
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         scope: SCOPES,
-        // `callback` will be invoked after token is granted (or denied)
         callback: async (tokenResponse: any) => {
           try {
             if (!tokenResponse || !tokenResponse.access_token) {
@@ -72,33 +70,56 @@ export default function GoogleOAuthButton() {
 
             const accessToken = tokenResponse.access_token;
 
-            // 🔑 Fetch profile info from Google
-            const userInfoRes = await fetch(
-              "https://www.googleapis.com/oauth2/v3/userinfo",
+            // Fetch complete profile info from Google People API
+            const peopleRes = await fetch(
+              "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,genders,birthdays",
               {
                 headers: { Authorization: `Bearer ${accessToken}` },
               }
             );
-            const profile = await userInfoRes.json();
+
+            if (!peopleRes.ok) {
+              throw new Error("Failed to fetch profile from Google People API");
+            }
+
+            const peopleData = await peopleRes.json();
+            console.log("Google People API response:", peopleData);
+
+            // Extract profile information
+            const firstName = peopleData.names?.[0]?.givenName || "";
+            const lastName = peopleData.names?.[0]?.familyName || "";
+            const avatar = peopleData.photos?.[0]?.url || "";
+            const email = peopleData.emailAddresses?.[0]?.value || "";
+
+            console.log("Extracted profile:", {
+              firstName,
+              lastName,
+              avatar,
+              email,
+            });
+
             const payload = {
               Provider: "google",
-              Token: accessToken, // access token (People API)
-              FirstName: profile?.FirstName,
-              LastName: profile?.LastName,
+              Token: accessToken,
               GuestUserId: currentUser?.Id,
               IsWeb: true,
+              FirstName: firstName,
+              LastName: lastName,
+              Avatar: avatar,
+              // Add these if your backend supports them
+              // Email: email,
+              // Gender: gender,
+              // Birthday: birthday,
             };
 
-            // Call your server action (server-side will call /Auth/Social/Login and set cookies)
+            // Call your server action
             const result = await socialLoginGoogle(payload);
 
             if (result?.success) {
               toast.success("✅ Logged in with Google");
 
-              // Update local user context without full reload (if available)
               if (typeof refreshUser === "function") {
                 await refreshUser();
-                // optionally route to dashboard or home
                 router.push("/");
               } else {
                 window.location.href = "/";
@@ -108,7 +129,7 @@ export default function GoogleOAuthButton() {
               toast.error(result?.message || "Google sign-in failed");
             }
           } catch (err: any) {
-            console.error("People API / social login error:", err);
+            console.error("Google People API / social login error:", err);
             toast.error(err?.message || "Google sign-in failed");
           } finally {
             setIsRequesting(false);
@@ -116,7 +137,7 @@ export default function GoogleOAuthButton() {
         },
       });
 
-      // Request an access token, prompt for consent to ensure scopes are granted
+      // Request access token with consent prompt to ensure all scopes are granted
       tokenClient.requestAccessToken({ prompt: "consent" });
     } catch (err: any) {
       console.error("Google OAuth flow error:", err);

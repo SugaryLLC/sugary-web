@@ -343,10 +343,10 @@ export default function AccountSettings() {
         </div>
 
         {/* Phone */}
-        <div className="rounded-full bg-card py-2 px-4">
-          <div className="flex flex-col gap-2 bg-card">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-1 items-center gap-2">
+        <div className="">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between  rounded-full py-2 px-4 bg-card">
+              <div className="flex flex-1 items-center gap-2 ">
                 {/* Country Code */}
                 <Input
                   {...form.register("phoneCode")}
