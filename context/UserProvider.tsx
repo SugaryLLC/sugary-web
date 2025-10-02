@@ -25,6 +25,7 @@ export function UserProvider({
     const result = await getCurrentUser();
     if (result.success) {
       setCurrentUser(result.user);
+      console.log("🙋‍♂️ currentUser ---->", currentUser);
     } else {
       console.warn("⚠️ Failed to refresh user, fallback to null/guest");
       setCurrentUser(null);

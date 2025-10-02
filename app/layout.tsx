@@ -7,6 +7,7 @@ import { UserProvider } from "@/context/UserProvider";
 import { Toaster } from "sonner";
 import Script from "next/script";
 import { getCurrentUser } from "@/actions/auth/getCurrentUser";
+import { LocationProvider } from "@/context/LocationProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,12 +32,15 @@ export default async function RootLayout({
       <body className={poppins.className} suppressHydrationWarning>
         <ThemeProvider>
           <TooltipProvider>
-            <UserProvider initialUser={initialUser}>{children}</UserProvider>
+            <LocationProvider>
+              <UserProvider initialUser={initialUser}>{children}</UserProvider>
+            </LocationProvider>
             {/* Google Identity Services SDK */}
             <Script
               src="https://accounts.google.com/gsi/client"
               strategy="afterInteractive"
             />
+
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>

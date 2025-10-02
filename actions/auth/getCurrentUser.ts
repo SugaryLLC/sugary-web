@@ -22,11 +22,7 @@ export async function getCurrentUser() {
         accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: "force-cache",
-      next: {
-        revalidate: 3600, // Revalidate data every hour
-        tags: ["current-user"], // Tag for manual revalidation
-      },
+      cache: "no-store",
     });
 
     let data: any = null;
